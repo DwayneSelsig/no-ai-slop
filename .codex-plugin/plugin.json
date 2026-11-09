@@ -7,7 +7,7 @@
     "url": "https://creatoreconomy.so"
   },
   "homepage": "https://creatoreconomy.so/p/use-my-no-ai-slop-skill-to-remove-20-ai-slop-patterns",
-  "repository": "https://github.com/petergyang/no-ai-slop",
+  "repository": "https://github.com/DwayneSelsig/no-ai-slop",
   "license": "MIT",
   "keywords": [
     "writing",
@@ -19,17 +19,17 @@
   "interface": {
     "displayName": "No AI Slop",
     "shortDescription": "Remove 20+ AI slop patterns",
-    "longDescription": "This plugin removes 20+ patterns of AI slop from your writing without flattening your personal voice. Slop patterns that it removes include:\n\nBinary contrasts: “It’s not X. It’s Y.”\n\nThroat-clearing openers: “Here’s the thing,” “Let me be clear”\n\nFaux-insight setups: “What nobody tells you,” “The part everyone misses”\n\nColon reveals: “The best part: it learns.”\n\nFake-profound endings: “The future isn’t coming. It’s already here.”\n\n...and more.\n\nUse it to remove AI slop from your writing or detect named slop patterns in a piece of writing. If you like this plugin, please star it on GitHub: https://github.com/petergyang/no-ai-slop",
-    "developerName": "Peter Yang",
+    "longDescription": "This plugin removes 20+ patterns of AI slop from your writing without flattening your personal voice. Slop patterns that it removes include:\n\nBinary contrasts: “It’s not X. It’s Y.”\n\nThroat-clearing openers: “Here’s the thing,” “Let me be clear”\n\nFaux-insight setups: “What nobody tells you,” “The part everyone misses”\n\nColon reveals: “The best part: it learns.”\n\nFake-profound endings: “The future isn’t coming. It’s already here.”\n\n...and more.\n\nUse it to remove AI slop from your writing or detect named slop patterns in a piece of writing. If you like this plugin, please star it on GitHub: https://github.com/DwayneSelsig/no-ai-slop",
+    "developerName": "Peter Yang (original author); Dwayne Selsig (fork maintainer)",
     "category": "Productivity",
     "capabilities": [
       "Edit",
       "Detect",
       "Preserve voice"
     ],
-    "websiteURL": "https://creatoreconomy.so/p/use-my-no-ai-slop-skill-to-remove-20-ai-slop-patterns",
-    "privacyPolicyURL": "https://github.com/petergyang/no-ai-slop/blob/main/PRIVACY.md",
-    "termsOfServiceURL": "https://github.com/petergyang/no-ai-slop/blob/main/TERMS.md",
+    "websiteURL": "https://github.com/DwayneSelsig/no-ai-slop",
+    "privacyPolicyURL": "https://github.com/DwayneSelsig/no-ai-slop/blob/main/PRIVACY.md",
+    "termsOfServiceURL": "https://github.com/DwayneSelsig/no-ai-slop/blob/main/TERMS.md",
     "defaultPrompt": [
       "(text)",
       "is this slop? (text)"
