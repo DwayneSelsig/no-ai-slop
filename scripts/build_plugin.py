@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import shutil
 import zipfile
 from pathlib import Path
@@ -20,6 +21,7 @@ SKILL_ROOT = ROOT / "skills" / "no-ai-slop"
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true", help="Validate without keeping build output")
+    parser.add_argument("--version", help="Override the package version for a release build (major.minor.patch)")
     return parser.parse_args()
 
 
@@ -78,8 +80,9 @@ def build_plugin(manifest: dict) -> tuple[Path, Path]:
     (plugin_root / "assets").mkdir(parents=True)
     skill_root.mkdir(parents=True)
 
-    shutil.copy2(MANIFEST, plugin_root / ".codex-plugin" / "plugin.json")
-    shutil.copy2(PORTABLE_MANIFEST, plugin_root / "plugin.json")
+    packaged_manifest = json.dumps(manifest, indent=2, ensure_ascii=False) + "\n"
+    (plugin_root / ".codex-plugin" / "plugin.json").write_text(packaged_manifest, encoding="utf-8")
+    (plugin_root / "plugin.json").write_text(packaged_manifest, encoding="utf-8")
     shutil.copy2(SKILL_ROOT / "SKILL.md", skill_root / "SKILL.md")
     shutil.copy2(SKILL_ROOT / "eval.md", skill_root / "eval.md")
     shutil.copy2(ROOT / "assets" / "no-ai-slop.png", plugin_root / "assets" / "no-ai-slop.png")
@@ -133,6 +136,10 @@ def main() -> None:
     args = parse_args()
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
     validate_source(manifest)
+    if args.version:
+        if not re.fullmatch(r"(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)", args.version):
+            raise SystemExit("Invalid version: expected major.minor.patch, e.g. 1.0.7")
+        manifest["version"] = args.version
     plugin_root, archive = build_plugin(manifest)
     validate_build(plugin_root, archive)
     print(f"Built {archive.relative_to(ROOT)}")
