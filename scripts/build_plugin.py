@@ -12,6 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / ".codex-plugin" / "plugin.json"
+PORTABLE_MANIFEST = ROOT / "plugin.json"
 DIST = ROOT / "dist"
 SKILL_ROOT = ROOT / "skills" / "no-ai-slop"
 
@@ -27,6 +28,22 @@ def validate_source(manifest: dict) -> None:
     missing = [key for key in required if not manifest.get(key)]
     if missing:
         raise SystemExit(f"Missing manifest fields: {', '.join(missing)}")
+
+    if not PORTABLE_MANIFEST.is_file():
+        raise SystemExit("Missing root plugin.json")
+    portable = json.loads(PORTABLE_MANIFEST.read_text(encoding="utf-8"))
+    if portable != manifest:
+        raise SystemExit("Root plugin.json differs from .codex-plugin/plugin.json")
+
+    skill_file = SKILL_ROOT / "SKILL.md"
+    if not skill_file.is_file():
+        raise SystemExit("Missing skills/no-ai-slop/SKILL.md")
+    skill_text = skill_file.read_text(encoding="utf-8")
+    if not skill_text.startswith("---\n"):
+        raise SystemExit("SKILL.md must start with YAML frontmatter")
+    parts = skill_text.split("---\n", 2)
+    if len(parts) < 3 or not all(any(line.startswith(key + ":") for line in parts[1].splitlines()) for key in ("name", "description")):
+        raise SystemExit("SKILL.md frontmatter requires name and description")
 
     interface = manifest["interface"]
     interface_required = (
@@ -62,6 +79,7 @@ def build_plugin(manifest: dict) -> tuple[Path, Path]:
     skill_root.mkdir(parents=True)
 
     shutil.copy2(MANIFEST, plugin_root / ".codex-plugin" / "plugin.json")
+    shutil.copy2(PORTABLE_MANIFEST, plugin_root / "plugin.json")
     shutil.copy2(SKILL_ROOT / "SKILL.md", skill_root / "SKILL.md")
     shutil.copy2(SKILL_ROOT / "eval.md", skill_root / "eval.md")
     shutil.copy2(ROOT / "assets" / "no-ai-slop.png", plugin_root / "assets" / "no-ai-slop.png")
@@ -82,6 +100,7 @@ def build_plugin(manifest: dict) -> tuple[Path, Path]:
 def validate_build(plugin_root: Path, archive: Path) -> None:
     expected = {
         ".codex-plugin/plugin.json",
+        "plugin.json",
         "assets/no-ai-slop.png",
         "skills/no-ai-slop/SKILL.md",
         "skills/no-ai-slop/eval.md",
@@ -96,6 +115,9 @@ def validate_build(plugin_root: Path, archive: Path) -> None:
     }
     if expected != actual:
         raise SystemExit(f"Unexpected package files: expected {sorted(expected)}, found {sorted(actual)}")
+
+    if json.loads((plugin_root / "plugin.json").read_text(encoding="utf-8")) != json.loads((plugin_root / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8")):
+        raise SystemExit("Packaged plugin manifests differ")
 
     packaged_skill = plugin_root / "skills" / "no-ai-slop" / "SKILL.md"
     packaged_eval = plugin_root / "skills" / "no-ai-slop" / "eval.md"
